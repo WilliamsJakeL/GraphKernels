@@ -1,0 +1,16 @@
+channels:
+  - anaconda
+  - pytorch
+dependencies:
+  - python=3.9
+  - conda-forge::rdkit=2022.03.05
+  - numpy
+  - matplotlib
+  - scipy=1.9.1
+  - pandas
+  - seaborn
+  - scikit-learn
+  - pip:
+    - ruffus
+    - tqdm
+    - networkx
