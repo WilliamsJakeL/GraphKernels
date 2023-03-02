@@ -12,12 +12,23 @@ from tqdm import tqdm
 from graph import Graph
 
 EXPERIMENTS = {
-    'PROTEINS_basic': {
+    'PROTEINS_nolabels': {
         'filename': 'data/PROTEINS.pickle',
         'train_split_seed': 0,
         't': [0.001, 0.01, 0.1, 1, 10],
         'num_bins': 40,
-        'r_lambda': 100
+        'r_lambda': 100,
+        'use_labels': False
+    },
+
+    'PROTEINS_labels': {
+        'filename': 'data/PROTEINS.pickle',
+        'train_split_seed': 0,
+        't': [0.001, 0.01, 0.1, 1, 10],
+        'num_bins': 40,
+        'r_lambda': 100,
+        'use_labels': True,
+        'label_pairs': [(0,0), (0,1), (1,1), (0,2), (1,2), (2,2)]
     }
 }
 
@@ -49,20 +60,24 @@ def train_KNN(infiles, outfiles, exp_name, exp_config):
         y += [graphs[i][1]]
         c[graphs[i][1]] += 1
     print("Training KNN")
-    kernel = BhattKernel(exp_config['t'], exp_config['num_bins'], train_graphs, y, exp_config['r_lambda'], calcWeights=True)
+    pl = exp_config.get('label_pairs', None)
+    kernel = BhattKernel(exp_config['t'], exp_config['num_bins'], train_graphs, y, exp_config['r_lambda'], exp_config['use_labels'], pl, calcWeights=True)
     pickle.dump(kernel, open(kernel_file, 'wb'))
     print("Loading Graphs for Testing KNN")
     test_graphs = []
     y_test = []
+    c_test = Counter()
     for i in indices[int(N*.8):]:
         test_graphs += [graphs[i][0]]
         y_test += [graphs[i][1]]
+        c_test[graphs[i][1]] += 1
     print("Testing KNN")
     preds = [kernel.predictGraph(g) for g in test_graphs]
     correct = 0
     for p, l in zip(preds, y_test):
         correct += 1 - abs(l - round(p))
     preds_d = {'Label Counts (Train)': str(c),
+                'Label Counts (Test)': str(c_test),
                 'Average Error': np.mean(np.abs(np.array(preds) - np.array(y_test))),
                 'Accuracy': correct/len(y_test)}
     with open(preds_files, 'w') as file:

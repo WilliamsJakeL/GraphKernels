@@ -39,11 +39,13 @@ class BhattKernel:
             it = np.nditer(h, flags=['multi_index'])
             while not it.finished:
                 v = it[0]
-                x, y = min(it.multi_index), max(it.multi_index)
+                x, y = g.vert_feats[min(it.multi_index)], g.vert_feats[max(it.multi_index)]
+                x, y = min(x,y), max(x,y)
                 if v == 1:
                     bins[(x,y)][self.num_bins-1] += 1
                 else:
                     bins[(x,y)][int(v*self.num_bins)] += 1
+                it.iternext()
             pi = []
             for l in bins.values():
                 pi += l
@@ -71,11 +73,13 @@ class BhattKernel:
                 it = np.nditer(h, flags=['multi_index'])
                 while not it.finished:
                     entry = it[0]
-                    x, y = min(it.multi_index), max(it.multi_index)
+                    x, y = g.vert_feats[min(it.multi_index)], g.vert_feats[max(it.multi_index)]
+                    x, y = min(x,y), max(x,y)
                     if entry == 1:
                         bins[(x,y)][self.num_bins-1] += 1
                     else:
                         bins[(x,y)][int(entry*self.num_bins)] += 1
+                    it.iternext()
                 pi = []
                 for l in bins.values():
                     pi += l
