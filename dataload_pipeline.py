@@ -73,7 +73,7 @@ def convert_to_graphs(infiles, outfiles, exp_name, exp_config):
             for e2 in z[2:]:
                 if int(e2) > j:
                     edges += [(j+1, int(e2)+1)]
-        g = [Graph(n, edges, nfs, [0 for _ in edges])]
+        g = Graph(n, edges, nfs, [0 for _ in edges])
         d[id] = (g, gf)
         id += 1
         i += n + 1
