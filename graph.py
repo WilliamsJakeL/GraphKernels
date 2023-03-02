@@ -3,10 +3,12 @@ from queue import PriorityQueue
 
 class Graph:
 
-    def __init__(self, num_verts, edges):
+    def __init__(self, num_verts, edges, vert_feats, edge_feats):
         self.vertN = num_verts
         self.validateEdges(edges)
         self.edges = edges
+        self.vert_feats = vert_feats
+        self.edge_feats = edge_feats
 
     def validateEdges(self, edges):
         for e1, e2 in edges:
