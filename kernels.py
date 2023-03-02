@@ -4,13 +4,17 @@ from graph import Graph
 
 class BhattKernel:
 
-    def __init__(self, t, num_bins, graphs=None, y=None, r_lambda=0, calcWeights=False):
+    def __init__(self, t, num_bins, graphs=None, y=None, r_lambda=0, use_labels=False, label_pairs=None, calcWeights=False):
         self.t = t
         self.numT = len(t)
         self.num_bins = num_bins
         self.graphs = graphs
         self.y = y
         self.r_lambda = r_lambda
+        self.use_labels = use_labels
+        if self.use_labels and label_pairs is None:
+            raise Exception("No label pairs provided")
+        self.label_pairs = label_pairs
         if not self.graphs is None:
             if self.numT == 1:
                 self.binnedGraphs = [self.graphBinnedSingle(g) for g in self.graphs]
@@ -28,27 +32,63 @@ class BhattKernel:
     def graphBinnedSingle(self, g):
         L = g.getLaplacian()
         h = expm(-self.t[0]*L)
-        pi = [0 for _ in range(self.num_bins)]
-        for v in np.nditer(h):
-            if v == 1:
-                pi[self.num_bins-1] += 1
-            else:
-                pi[int(v*self.num_bins)] += 1
-        return pi
+        if self.use_labels:
+            bins = {}
+            for p in self.label_pairs:
+                bins[p] = [0 for _ in range(self.num_bins)]
+            it = np.nditer(h, flags=['multi_index'])
+            while not it.finished:
+                v = it[0]
+                x, y = min(it.multi_index), max(it.multi_index)
+                if v == 1:
+                    bins[(x,y)][self.num_bins-1] += 1
+                else:
+                    bins[(x,y)][int(v*self.num_bins)] += 1
+            pi = []
+            for l in bins.values():
+                pi += l
+            return pi
+        else:
+            pi = [0 for _ in range(self.num_bins)]
+            for v in np.nditer(h):
+                if v == 1:
+                    pi[self.num_bins-1] += 1
+                else:
+                    pi[int(v*self.num_bins)] += 1
+            return pi 
 
     def graphBinned(self, g):
         L = g.getLaplacian()
         # h = expm(-(self.t/g.vertN)*L)
         w, v = np.linalg.eigh(L)
-        pi = [0 for _ in range(self.num_bins*self.numT)]
+        pi_t = []
         for i, B in enumerate(self.t):
             h = v@np.diag(np.exp(-B*w))@v.T
-            for entry in np.nditer(h):
-                if entry >= 1:
-                    pi[(i*self.num_bins)+self.num_bins-1] += 1
-                else:
-                    pi[(i*self.num_bins)+int(entry*self.num_bins)] += 1
-        return pi
+            if self.use_labels:
+                bins = {}
+                for p in self.label_pairs:
+                    bins[p] = [0 for _ in range(self.num_bins)]
+                it = np.nditer(h, flags=['multi_index'])
+                while not it.finished:
+                    entry = it[0]
+                    x, y = min(it.multi_index), max(it.multi_index)
+                    if entry == 1:
+                        bins[(x,y)][self.num_bins-1] += 1
+                    else:
+                        bins[(x,y)][int(entry*self.num_bins)] += 1
+                pi = []
+                for l in bins.values():
+                    pi += l
+                pi_t += pi
+            else:
+                pi = [0 for _ in range(self.num_bins)]
+                for entry in np.nditer(h):
+                    if entry == 1:
+                        pi[self.num_bins-1] += 1
+                    else:
+                        pi[int(entry*self.num_bins)] += 1
+                pi_t += pi 
+        return pi_t
 
     def calculateWeights(self):
         phi = np.sqrt(self.binnedGraphs)
