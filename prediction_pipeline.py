@@ -15,6 +15,7 @@ EXPERIMENTS = {
     'PROTEINS_nolabels': {
         'filename': 'data/PROTEINS.pickle',
         'train_split_seed': 0,
+        'train_split_p': .8,
         't': [0.001, 0.01, 0.1, 1, 10],
         'num_bins': 40,
         'r_lambda': 100,
@@ -24,6 +25,28 @@ EXPERIMENTS = {
     'PROTEINS_labels': {
         'filename': 'data/PROTEINS.pickle',
         'train_split_seed': 0,
+        'train_split_p': .8,
+        't': [0.001, 0.01, 0.1, 1, 10],
+        'num_bins': 40,
+        'r_lambda': 100,
+        'use_labels': True,
+        'label_pairs': [(0,0), (0,1), (1,1), (0,2), (1,2), (2,2)]
+    },
+
+    'PROTEINS_nolabels_t5': {
+        'filename': 'data/PROTEINS.pickle',
+        'train_split_seed': 0,
+        'train_split_p': .5,
+        't': [0.001, 0.01, 0.1, 1, 10],
+        'num_bins': 40,
+        'r_lambda': 100,
+        'use_labels': False
+    },
+
+    'PROTEINS_labels_t5': {
+        'filename': 'data/PROTEINS.pickle',
+        'train_split_seed': 0,
+        'train_split_p': .5,
         't': [0.001, 0.01, 0.1, 1, 10],
         'num_bins': 40,
         'r_lambda': 100,
@@ -55,7 +78,7 @@ def train_KNN(infiles, outfiles, exp_name, exp_config):
     train_graphs = []
     y = []
     c = Counter()
-    for i in indices[:int(N*.8)]:
+    for i in indices[:int(N*exp_config['train_split_p'])]:
         train_graphs += [graphs[i][0]]
         y += [graphs[i][1]]
         c[graphs[i][1]] += 1
@@ -67,7 +90,7 @@ def train_KNN(infiles, outfiles, exp_name, exp_config):
     test_graphs = []
     y_test = []
     c_test = Counter()
-    for i in indices[int(N*.8):]:
+    for i in indices[int(N*exp_config['train_split_p']):]:
         test_graphs += [graphs[i][0]]
         y_test += [graphs[i][1]]
         c_test[graphs[i][1]] += 1
