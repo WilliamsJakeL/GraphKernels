@@ -1,4 +1,4 @@
-from kernels import BhattKernel
+from kernels import BhattKernel, BhattKernelNodes
 import numpy as np
 import pandas as pd
 import pickle
@@ -72,7 +72,8 @@ EXPERIMENTS_nodes = {
         't': [0.001, 0.01, 0.1, 1, 10],
         'num_bins': 40,
         'r_lambda': 100,
-        'label_pairs': [(0,0), (0,1), (1,1), (0,2), (1,2), (2,2), (0,3), (1,3), (2, 3), (3,3)],
+        'label_types': [0,1,2,3],
+        'use_labels': True, 
         'nodes_to_predict': [0]
     }
 }
@@ -88,7 +89,7 @@ def params():
 
 def params_nodes():
     for exp_name, exp_config in EXPERIMENTS_nodes.items():
-        infiles = exp_config['filename']
+        infiles = (exp_config['train_file'], exp_config['test_file'])
         outfiles = td(f"{exp_name}.knn.pickle"), td(f"{exp_name}.preds.txt")
         yield infiles, outfiles, exp_name, exp_config
 
@@ -134,5 +135,45 @@ def train_KNN(infiles, outfiles, exp_name, exp_config):
     with open(preds_files, 'w') as file:
         file.write(str(preds_d))
 
+@mkdir(OUTPUT_DIR)
+@files(params_nodes)
+def train_KNN_nodes(infiles, outfiles, exp_name, exp_config):
+    train_file, test_file = infiles
+    kernel_file, preds_files = outfiles
+    print("Loading Graphs to train KNN")
+    graphs = pickle.load(open(train_file, 'rb'))
+    N = len(graphs)
+    train_graphs = []
+    ys = []
+    for g in graphs.values():
+        train_graphs += [g[0]]
+        for i, f in enumerate(g[0].vert_feats):
+            if f in exp_config['nodes_to_predict']:
+                ys += [(i, g[1][i])]
+    print("Training KNN")
+    pl = exp_config.get('label_types', None)
+    kernel = BhattKernelNodes(exp_config['t'], exp_config['num_bins'], train_graphs, ys, exp_config['r_lambda'], exp_config['use_labels'], pl, calcWeights=True)
+    pickle.dump(kernel, open(kernel_file, 'wb'))
+    print("Loading Graphs for Testing KNN")
+    graphs_test = pickle.load(open(test_file, 'rb'))
+    N = len(graphs_test)
+    test_graphs = []
+    ys_test = []
+    for a, g in enumerate(graphs_test.values()):
+        train_graphs += [g[0]]
+        for i, f in enumerate(g[0].vert_feats):
+            if f in exp_config['nodes_to_predict']:
+                ys_test += [(a, i, g[1][i])]
+    print("Testing KNN")
+    preds = [kernel.predictGraph(test_graphs[a], i) for a, i, _ in ys_test]
+    y_test = [y for _, _, y in ys_test]
+    # correct = 0
+    # for p, l in zip(preds, y_test):
+    #     correct += 1 - abs(l - round(p))
+    preds_d = {'Average Error (MAE)': np.mean(np.abs(np.array(preds) - np.array(y_test))),
+                'RMSE': np.sqrt(np.mean((np.array(preds) - np.array(y_test))**2))}
+    with open(preds_files, 'w') as file:
+        file.write(str(preds_d))
+
 if __name__ == "__main__":
-    pipeline_run([train_KNN], checksum_level=0)
+    pipeline_run([train_KNN, train_KNN_nodes], checksum_level=0)

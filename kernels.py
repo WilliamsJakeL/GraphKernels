@@ -116,7 +116,7 @@ class BhattKernelNodes:
         self.use_labels = use_labels
         if self.use_labels and label_types is None:
             raise Exception("No label pairs provided")
-        self.label_pairs = label_types
+        self.label_types = label_types
         self.binnedGraphs = []
         self.y = []
         if not self.graphs is None:
