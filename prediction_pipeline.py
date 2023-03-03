@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 from graph import Graph
 
-EXPERIMENTS = {
+EXPERIMENTS_graphs = {
     'PROTEINS_nolabels': {
         'filename': 'data/PROTEINS.pickle',
         'train_split_seed': 0,
@@ -31,6 +31,16 @@ EXPERIMENTS = {
         'r_lambda': 100,
         'use_labels': True,
         'label_pairs': [(0,0), (0,1), (1,1), (0,2), (1,2), (2,2)]
+    },
+
+    'PROTEINS_nolabels_test': {
+        'filename': 'data/PROTEINS.pickle',
+        'train_split_seed': 0,
+        'train_split_p': .8,
+        't': [0.001, 0.01, 0.1, 1, 10],
+        'num_bins': 40,
+        'r_lambda': 100,
+        'use_labels': False
     },
 
     'PROTEINS_nolabels_t5': {
@@ -55,11 +65,29 @@ EXPERIMENTS = {
     }
 }
 
+EXPERIMENTS_nodes = {
+    'CSD_H_only': {
+        'train_file': 'data/CSD-2k.pickle',
+        'test_file': 'data/CSD-500.pickle',
+        't': [0.001, 0.01, 0.1, 1, 10],
+        'num_bins': 40,
+        'r_lambda': 100,
+        'label_pairs': [(0,0), (0,1), (1,1), (0,2), (1,2), (2,2), (0,3), (1,3), (2, 3), (3,3)],
+        'nodes_to_predict': [0]
+    }
+}
+
 OUTPUT_DIR = "predictions/" 
 td = lambda x : os.path.join(OUTPUT_DIR, x)
 
 def params():
-    for exp_name, exp_config in EXPERIMENTS.items():
+    for exp_name, exp_config in EXPERIMENTS_graphs.items():
+        infiles = exp_config['filename']
+        outfiles = td(f"{exp_name}.knn.pickle"), td(f"{exp_name}.preds.txt")
+        yield infiles, outfiles, exp_name, exp_config
+
+def params_nodes():
+    for exp_name, exp_config in EXPERIMENTS_nodes.items():
         infiles = exp_config['filename']
         outfiles = td(f"{exp_name}.knn.pickle"), td(f"{exp_name}.preds.txt")
         yield infiles, outfiles, exp_name, exp_config

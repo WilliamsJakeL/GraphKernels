@@ -24,16 +24,16 @@ class Graph:
 
     def getDegrees(self):
         d = [0 for _ in range(self.vertN)]
-        for e1, e2 in self.edges:
-            d[e1-1] += 1
-            d[e2-1] += 1
+        for i, (e1, e2) in enumerate(self.edges):
+            d[e1-1] += self.edge_feats[i]
+            d[e2-1] += self.edge_feats[i]
         return d
     
     def getAdjacencyMatrix(self):
         a = np.zeros((self.vertN, self.vertN))
-        for e1, e2 in self.edges:
-            a[e1-1][e2-1] = 1
-            a[e2-1][e1-1] = 1
+        for i, (e1, e2) in enumerate(self.edges):
+            a[e1-1][e2-1] = self.edge_feats[i]
+            a[e2-1][e1-1] = self.edge_feats[i]
         return a
 
     def getLaplacian(self):
