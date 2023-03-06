@@ -1,7 +1,9 @@
 from re import S
 import numpy as np
 from scipy.linalg import expm
+from scipy.sparse.linalg import cg
 from graph import Graph
+from tqdm import tqdm
 
 class BhattKernel:
 
@@ -121,13 +123,15 @@ class BhattKernelNodes:
         self.y = []
         if not self.graphs is None:
             if self.numT == 1:
-                for g, (node, y) in zip(self.graphs, self.ys):
-                    self.binnedGraphs += self.graphBinnedSingle(g, node)
-                    self.y += [y]
+                for g, nodeY in zip(self.graphs, self.ys):
+                    for node, y in nodeY:
+                        self.binnedGraphs += [self.graphBinnedSingle(g, node)]
+                        self.y += [y]
             else:
-                for g, (node, y) in zip(self.graphs, self.ys):
-                    self.binnedGraphs += self.graphBinned(g, node)
-                    self.y += [y]
+                for g, nodeY in tqdm(zip(self.graphs, self.ys)):
+                    for node, y in nodeY:
+                        self.binnedGraphs += [self.graphBinned(g, node)]
+                        self.y += [y]
         if not calcWeights:
             self.weights = np.zeros(self.num_bins)
         else:
@@ -169,7 +173,7 @@ class BhattKernelNodes:
     def graphBinned(self, g, node):
         L = g.getLaplacian()
         # h = expm(-(self.t/g.vertN)*L)
-        w, v = np.linalg.eigh(L)
+        w, v = g.w, g.v
         pi_t = []
         for i, B in enumerate(self.t):
             h = v@np.diag(np.exp(-B*w))@v.T
@@ -199,6 +203,8 @@ class BhattKernelNodes:
 
     def calculateWeights(self):
         phi = np.sqrt(self.binnedGraphs)
-        alpha = np.linalg.solve((phi@phi.T) + self.r_lambda*np.eye(len(self.graphs)), self.y)
-        w = phi.T@alpha
+        w, _ = cg((phi.T@phi) + self.r_lambda*np.eye(phi.shape[1]), phi.T@self.y)
+        # alpha = cg((phi@phi.T) + self.r_lambda*np.eye(len(self.y)), self.y)
+        # alpha = np.linalg.solve((phi@phi.T) + self.r_lambda*np.eye(len(self.graphs)), self.y)
+        # w = phi.T@alpha
         return w, np.mean(np.abs(phi@w - self.y))
