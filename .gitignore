@@ -2,3 +2,4 @@
 .vscode/
 data/CSD*.pickle
 predictions/CSD*knn*
+dataset/
