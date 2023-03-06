@@ -1,0 +1,1 @@
+{'Average Error (MAE)': 0.8201216755635891, 'RMSE': 1.023828388497713, 'Kendall': KendalltauResult(correlation=0.30527205576169225, pvalue=1.1177691681259157e-20)}

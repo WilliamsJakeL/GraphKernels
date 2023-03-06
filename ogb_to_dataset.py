@@ -5,7 +5,7 @@ from graph import Graph
 
 from ogb.graphproppred import GraphPropPredDataset
 
-d_name = "ogbg-molesol"
+d_name = "ogbg-mollipo"
 
 dataset = GraphPropPredDataset(name = d_name)
 
@@ -35,6 +35,6 @@ for i in valid_idx:
     graph, label = dataset[i]
     valid_d[i] = (load_graph(graph), label)
 
-pickle.dump(train_d, open('data/OGB_molesol.train.pickle', 'wb'))
-pickle.dump(test_d, open('data/OGB_molesol.test.pickle', 'wb'))
-pickle.dump(valid_d, open('data/OGB_molesol.valid.pickle', 'wb'))
+pickle.dump(train_d, open('data/OGB_mollipo.train.pickle', 'wb'))
+pickle.dump(test_d, open('data/OGB_mollipo.test.pickle', 'wb'))
+pickle.dump(valid_d, open('data/OGB_mollipo.valid.pickle', 'wb'))
