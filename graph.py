@@ -9,6 +9,7 @@ class Graph:
         self.edges = edges
         self.vert_feats = vert_feats
         self.edge_feats = edge_feats
+        self.w, self.v = np.linalg.eigh(self.getLaplacian())
 
     def validateEdges(self, edges):
         for e1, e2 in edges:

@@ -147,9 +147,11 @@ def train_KNN_nodes(infiles, outfiles, exp_name, exp_config):
     ys = []
     for g in graphs.values():
         train_graphs += [g[0]]
+        ys_g = []
         for i, f in enumerate(g[0].vert_feats):
             if f in exp_config['nodes_to_predict']:
-                ys += [(i, g[1][i])]
+                ys_g += [(i, g[1][i])]
+        ys += [ys_g]
     print("Training KNN")
     pl = exp_config.get('label_types', None)
     kernel = BhattKernelNodes(exp_config['t'], exp_config['num_bins'], train_graphs, ys, exp_config['r_lambda'], exp_config['use_labels'], pl, calcWeights=True)
@@ -165,7 +167,7 @@ def train_KNN_nodes(infiles, outfiles, exp_name, exp_config):
             if f in exp_config['nodes_to_predict']:
                 ys_test += [(a, i, g[1][i])]
     print("Testing KNN")
-    preds = [kernel.predictGraph(test_graphs[a], i) for a, i, _ in ys_test]
+    preds = [kernel.predictNode(test_graphs[a], i) for a, i, _ in ys_test]
     y_test = [y for _, _, y in ys_test]
     # correct = 0
     # for p, l in zip(preds, y_test):
