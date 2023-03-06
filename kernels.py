@@ -81,9 +81,10 @@ class BhattKernel:
                     entry = it[0]
                     x, y = g.vert_feats[min(it.multi_index)], g.vert_feats[max(it.multi_index)]
                     x, y = min(x,y), max(x,y)
-                    if entry == 1:
+                    if entry >= 1:
                         bins[(x,y)][self.num_bins-1] += 1
                     else:
+                        # print(entry)
                         bins[(x,y)][int(entry*self.num_bins)] += 1
                     it.iternext()
                 pi = []
@@ -102,8 +103,9 @@ class BhattKernel:
 
     def calculateWeights(self):
         phi = np.sqrt(self.binnedGraphs)
-        alpha = np.linalg.solve((phi@phi.T) + self.r_lambda*np.eye(len(self.graphs)), self.y)
-        w = phi.T@alpha
+        # alpha = np.linalg.solve((phi@phi.T) + self.r_lambda*np.eye(len(self.graphs)), self.y)
+        # w = phi.T@alpha
+        w, _ = cg((phi.T@phi) + self.r_lambda*np.eye(phi.shape[1]), phi.T@self.y)
         return w, np.mean(np.abs(phi@w - self.y))
 
 class BhattKernelNodes:
