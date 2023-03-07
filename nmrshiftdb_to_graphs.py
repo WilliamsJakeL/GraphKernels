@@ -7,7 +7,7 @@ from rdkit import Chem
 from graph import Graph
 
 # d_name = "nmrshiftdb.1H.pickle"
-data = pickle.load(open('data/nmrshiftdb.1H.pickle', 'rb'))
+data = pickle.load(open('data/nmrshiftdb.13C.pickle', 'rb'))
 
 BOND_TYPE_TO_LABEL = {
     rdkit.Chem.rdchem.BondType.SINGLE : 1,
@@ -45,5 +45,5 @@ for i, row in data.iterrows():
         d_train[i] = (g, l)
 
 
-pickle.dump(d_train, open('data/nmrshiftdb.1H.train.pickle', 'wb'))
-pickle.dump(d_test, open('data/nmrshiftdb.1H.test.pickle', 'wb'))
+pickle.dump(d_train, open('data/nmrshiftdb.13C.train.pickle', 'wb'))
+pickle.dump(d_test, open('data/nmrshiftdb.13C.test.pickle', 'wb'))
