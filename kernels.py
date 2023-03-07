@@ -47,7 +47,7 @@ class BhattKernel:
                 v = it[0]
                 x, y = g.vert_feats[min(it.multi_index)], g.vert_feats[max(it.multi_index)]
                 x, y = min(x,y), max(x,y)
-                if v == 1:
+                if v >= 1:
                     bins[(x,y)][self.num_bins-1] += 1
                 else:
                     bins[(x,y)][int(v*self.num_bins)] += 1
@@ -59,7 +59,7 @@ class BhattKernel:
         else:
             pi = [0 for _ in range(self.num_bins)]
             for v in np.nditer(h):
-                if v == 1:
+                if v >= 1:
                     pi[self.num_bins-1] += 1
                 else:
                     pi[int(v*self.num_bins)] += 1
@@ -94,7 +94,7 @@ class BhattKernel:
             else:
                 pi = [0 for _ in range(self.num_bins)]
                 for entry in np.nditer(h):
-                    if entry == 1:
+                    if entry >= 1:
                         pi[self.num_bins-1] += 1
                     else:
                         pi[int(entry*self.num_bins)] += 1
@@ -155,7 +155,7 @@ class BhattKernelNodes:
                 bins[p] = [0 for _ in range(self.num_bins)]
             for it, v in enumerate(h[node]):
                 x = g.vert_feats[it]
-                if v == 1:
+                if v >= 1:
                     bins[x][self.num_bins-1] += 1
                 else:
                     bins[x][int(v*self.num_bins)] += 1
@@ -166,7 +166,7 @@ class BhattKernelNodes:
         else:
             pi = [0 for _ in range(self.num_bins)]
             for v in h[node]:
-                if v == 1:
+                if v >= 1:
                     pi[self.num_bins-1] += 1
                 else:
                     pi[int(v*self.num_bins)] += 1
@@ -185,7 +185,7 @@ class BhattKernelNodes:
                     bins[p] = [0 for _ in range(self.num_bins)]
                 for it, entry in enumerate(h[node]):
                     x = g.vert_feats[it]
-                    if entry == 1:
+                    if entry >= 1:
                         bins[x][self.num_bins-1] += 1
                     else:
                         bins[x][int(entry*self.num_bins)] += 1
@@ -196,7 +196,7 @@ class BhattKernelNodes:
             else:
                 pi = [0 for _ in range(self.num_bins)]
                 for entry in h[node]:
-                    if entry == 1:
+                    if entry >= 1:
                         pi[self.num_bins-1] += 1
                     else:
                         pi[int(entry*self.num_bins)] += 1

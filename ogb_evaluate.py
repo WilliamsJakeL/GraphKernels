@@ -47,7 +47,7 @@ exp_config = {
 pl = exp_config.get('label_pairs', None)
 
 print("Loading Molecules")
-d = pickle.load(open('data/OGB_molfreesolv.train.pickle', 'rb'))
+d = pickle.load(open('data/OGB_molfreesolv_1.train.pickle', 'rb'))
 train_graphs = [g for g, _ in d.values()]
 y = [l[0] for _, l in d.values()]
 
@@ -56,7 +56,7 @@ kernel = BhattKernel(exp_config['t'], exp_config['num_bins'], train_graphs, y, e
 
 
 print("Loading Test")
-d_test = pickle.load(open('data/OGB_molfreesolv.test.pickle', 'rb'))
+d_test = pickle.load(open('data/OGB_molfreesolv_1.test.pickle', 'rb'))
 test_graphs = [g for g, _ in d_test.values()]
 y_test = [l[0] for _, l in d_test.values()]
 
@@ -65,5 +65,5 @@ preds = [kernel.predictGraph(g) for g in test_graphs]
 preds_d = {'Average Error (MAE)': np.mean(np.abs(np.array(preds) - np.array(y_test))),
                 'RMSE': np.sqrt(np.mean((np.array(preds) - np.array(y_test))**2)),
                 'Kendall': kt(preds, y_test)}
-with open('predictions/OGB_molfreesolv_baseline.txt', 'w') as file:
+with open('predictions/OGB_molfreesolv_1.txt', 'w') as file:
     file.write(str(preds_d))

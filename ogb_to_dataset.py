@@ -15,7 +15,7 @@ def load_graph(g):
     for i, (e1, e2) in enumerate(g['edge_index'].T):
         if e1 < e2:
             edges += [(e1+1, e2+1)]
-            efs += [g['edge_feat'][i][0]]
+            efs += [g['edge_feat'][i][0] + 1]
     vfs = [a[0] for a in g['node_feat']]
     return Graph(n, edges, vfs, efs)
 
@@ -35,6 +35,6 @@ for i in valid_idx:
     graph, label = dataset[i]
     valid_d[i] = (load_graph(graph), label)
 
-pickle.dump(train_d, open('data/OGB_molfreesolv.train.pickle', 'wb'))
-pickle.dump(test_d, open('data/OGB_molfreesolv.test.pickle', 'wb'))
-pickle.dump(valid_d, open('data/OGB_molfreesolv.valid.pickle', 'wb'))
+pickle.dump(train_d, open('data/OGB_molfreesolv_1.train.pickle', 'wb'))
+pickle.dump(test_d, open('data/OGB_molfreesolv_1.test.pickle', 'wb'))
+pickle.dump(valid_d, open('data/OGB_molfreesolv_1.valid.pickle', 'wb'))
