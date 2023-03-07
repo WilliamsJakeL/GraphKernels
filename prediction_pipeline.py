@@ -78,6 +78,17 @@ EXPERIMENTS_nodes = {
         'nodes_to_predict': [0]
     },
 
+    'CSD_rdkit_H_only': {
+        'train_file': 'data/CSD-2k.rdkit.pickle',
+        'test_file': 'data/CSD-500.rdkit.pickle',
+        't': [0.001, 0.01, 0.1, 1, 10],
+        'num_bins': 40,
+        'r_lambda': 100,
+        'label_types': [1,6,7,8,9,15,16,17],
+        'use_labels': True, 
+        'nodes_to_predict': [1]
+    },
+
     'nmrshiftdb_H_only': {
         'train_file': 'data/nmrshiftdb.1H.train.pickle',
         'test_file': 'data/nmrshiftdb.1H.test.pickle',
