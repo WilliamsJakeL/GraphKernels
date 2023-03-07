@@ -2,6 +2,7 @@ from kernels import BhattKernel, BhattKernelNodes
 import numpy as np
 import pandas as pd
 import pickle
+from scipy.stats import kendalltau as kt
 
 import os
 from collections import Counter
@@ -195,7 +196,8 @@ def train_KNN_nodes(infiles, outfiles, exp_name, exp_config):
     # for p, l in zip(preds, y_test):
     #     correct += 1 - abs(l - round(p))
     preds_d = {'Average Error (MAE)': np.mean(np.abs(np.array(preds) - np.array(y_test))),
-                'RMSE': np.sqrt(np.mean((np.array(preds) - np.array(y_test))**2))}
+                'RMSE': np.sqrt(np.mean((np.array(preds) - np.array(y_test))**2)),
+                'Kendall': kt(preds, y_test)}
     with open(preds_files, 'w') as file:
         file.write(str(preds_d))
 
