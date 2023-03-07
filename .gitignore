@@ -1,5 +1,7 @@
 *__pycache__/
 .vscode/
 data/CSD*.pickle
+data/nmrshiftdb*
 predictions/CSD*knn*
+predictions/nmrshiftdb*knn*
 dataset/

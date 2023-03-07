@@ -205,6 +205,7 @@ class BhattKernelNodes:
 
     def calculateWeights(self):
         phi = np.sqrt(self.binnedGraphs)
+        # print(phi.shape)
         w, _ = cg((phi.T@phi) + self.r_lambda*np.eye(phi.shape[1]), phi.T@self.y)
         # alpha = cg((phi@phi.T) + self.r_lambda*np.eye(len(self.y)), self.y)
         # alpha = np.linalg.solve((phi@phi.T) + self.r_lambda*np.eye(len(self.graphs)), self.y)

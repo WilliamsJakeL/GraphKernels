@@ -75,6 +75,17 @@ EXPERIMENTS_nodes = {
         'label_types': [0,1,2,3],
         'use_labels': True, 
         'nodes_to_predict': [0]
+    },
+
+    'nmrshiftdb_H_only': {
+        'train_file': 'data/nmrshiftdb.1H.train.pickle',
+        'test_file': 'data/nmrshiftdb.1H.test.pickle',
+        't': [0.001, 0.01, 0.1, 1, 10],
+        'num_bins': 40,
+        'r_lambda': 100,
+        'label_types': [1,6,7,8,9,15,16,17],
+        'use_labels': True, 
+        'nodes_to_predict': [1]
     }
 }
 
@@ -149,7 +160,7 @@ def train_KNN_nodes(infiles, outfiles, exp_name, exp_config):
         train_graphs += [g[0]]
         ys_g = []
         for i, f in enumerate(g[0].vert_feats):
-            if f in exp_config['nodes_to_predict']:
+            if f in exp_config['nodes_to_predict'] and not g[1][i] == -100:
                 ys_g += [(i, g[1][i])]
         ys += [ys_g]
     print("Training KNN")
@@ -164,7 +175,7 @@ def train_KNN_nodes(infiles, outfiles, exp_name, exp_config):
     for a, g in enumerate(graphs_test.values()):
         test_graphs += [g[0]]
         for i, f in enumerate(g[0].vert_feats):
-            if f in exp_config['nodes_to_predict']:
+            if f in exp_config['nodes_to_predict']and not g[1][i] == -100:
                 ys_test += [(a, i, g[1][i])]
     print("Testing KNN")
     preds = [kernel.predictNode(test_graphs[a], i) for a, i, _ in ys_test]
