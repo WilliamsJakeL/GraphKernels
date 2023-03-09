@@ -75,7 +75,7 @@ train_y_50 = [.25 for _ in range(100)] + \
 
 print("\n Add in N=50 graphs! \n")
 
-K = BhattKernel(t=[0.01, 0.1, 0.5, 1.0], num_bins=40, graphs=train_graphs_50, y=train_y_50,r_lambda=100,calcWeights=True)
+K = BhattKernel(t=[0.001, 0.01, 0.1, 1.0, 10], num_bins=40, graphs=train_graphs_50, y=train_y_50,r_lambda=100,calcWeights=True)
 
 preds = np.array([K.predictGraph(g) for g in test_graphs])
 
@@ -84,7 +84,30 @@ print("(50) Average absolute error (N=10):", np.mean(np.abs(preds[:300] - test_y
 print("(50) Average absolute error (N=25):", np.mean(np.abs(preds[300:600] - test_y_np[300:600])))
 print("(50) Average absolute error (N=17):", np.mean(np.abs(preds[600:900] - test_y_np[600:900])))
 print("(50) Average absolute error (N=50):", np.mean(np.abs(preds[900:] - test_y_np[900:])), '\n')
-# print("Average absolute percent error:", np.mean(np.abs(preds-test_y_np)/test_y_np))
+
+classification_correct = 0
+for i in range(100):
+    if preds[i] <= .375:
+        classification_correct += 1
+    if preds[i + 300] <= .375:
+        classification_correct += 1
+    if preds[i + 900] <= .375:
+        classification_correct += 1
+for i in range(100, 200):
+    if preds[i] >= .375 and preds[i] <= .625:
+        classification_correct += 1
+    if preds[i+300] >= .375 and preds[i+300] <= .625:
+        classification_correct += 1
+    if preds[i+900] >= .375 and preds[i+900] <= .625:
+        classification_correct += 1
+for i in range(200, 300):
+    if preds[i] >= .625:
+        classification_correct += 1
+    if preds[i+300] >= .625:
+        classification_correct += 1
+    if preds[i+900] >= .625:
+        classification_correct += 1
+print("Classification accuracy:", classification_correct/900)
 
 print("Test Full Random Graph Generation")
 
@@ -92,7 +115,7 @@ r = np.random.random((1000,2))
 train_all_random = [Graph.generateRandom(int(n*98)+2, m) for (n,m) in r]
 train_all_ry = [m for (_, m) in r]
 
-K = BhattKernel(t=[0.01, 0.1, 0.5, 1.0], num_bins=40, graphs=train_all_random, y=train_all_ry,r_lambda=100,calcWeights=True)
+K = BhattKernel(t=[0.001, 0.01, 0.1, 1.0, 10], num_bins=40, graphs=train_all_random, y=train_all_ry,r_lambda=100,calcWeights=True)
 
 preds = np.array([K.predictGraph(g) for g in test_graphs])
 

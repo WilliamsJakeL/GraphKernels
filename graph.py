@@ -49,7 +49,7 @@ class Graph:
                 if r[c] > p:
                     e += [(i,j)]
                 c += 1
-        return Graph(N, e)
+        return Graph(N, e, [0 for _ in range(N)], [1 for _ in e])
 
     def hasSixRing(self):
         for i in self.vertN:
