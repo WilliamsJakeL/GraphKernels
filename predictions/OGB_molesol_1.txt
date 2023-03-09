@@ -1,1 +1,2 @@
-{'Average Error (MAE)': 0.7183504850551987, 'RMSE': 0.9027276791865916, 'Kendall': KendalltauResult(correlation=0.7332490518331226, pvalue=1.1306077048163693e-30)}
+Labels: {'Average Error (MAE)': 0.7183504850551987, 'RMSE': 0.9027276791865916, 'Kendall': KendalltauResult(correlation=0.7332490518331226, pvalue=1.1306077048163693e-30)}
+No Labels: {'Average Error (MAE)': 1.2754349634122093, 'RMSE': 1.6852202990491192, 'Kendall': KendalltauResult(correlation=0.4526124770540032, pvalue=1.2109485493112463e-12)}
